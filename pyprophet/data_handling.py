@@ -178,14 +178,18 @@ def prepare_data_table(table,
         if 'metabolomics' in ss_score_filter:
             input_scores.remove('metabolomics')
             metabolomics_scores = use_metabolomics_scores()
-            input_scores += metabolomics_scores
-            input_scores = list(set(input_scores))
+            for score in metabolomics_scores:
+                if score not in input_scores:
+                    input_scores.append(score)
 
         # remove main score from filter list if it was specified twice (main, var)
         if main_score_name.strip("main_") in input_scores:
             input_scores.remove(main_score_name.strip("main_"))
 
-        var_columns_available_s = set(var_columns_available)
+        var_columns_available_s = []
+        for col in var_columns_available:
+            if col not in var_columns_available_s:
+                var_columns_available_s.append(col)
         score_not_found = []
 
         for score in input_scores:
