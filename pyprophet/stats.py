@@ -180,7 +180,11 @@ def pi0est(p_values, lambda_ = np.arange(0.05,1.0,0.05), pi0_method = "smoother"
     ll = 1
     if isinstance(lambda_, np.ndarray ):
         ll = len(lambda_)
+        lambda_start = max(np.min(lambda_), np.min(p))
+        lambda_end = min(np.max(lambda_), np.max(p))
+        lambda_ = np.linspace(lambda_start, lambda_end, ll)
         lambda_ = np.sort(lambda_)
+        print(f"Current lambda: {lambda_}")
 
     if (min(p) < 0 or max(p) > 1):
         raise click.ClickException("p-values not in valid range [0,1].")
