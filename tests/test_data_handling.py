@@ -1,6 +1,7 @@
 # encoding: utf-8
 from __future__ import print_function
 
+import pyximport; pyximport.install()
 from pyprophet.data_handling import check_for_unique_blocks
 
 

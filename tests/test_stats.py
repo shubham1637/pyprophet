@@ -1,6 +1,7 @@
 # encoding: utf-8
 from __future__ import print_function
 
+import pyximport; pyximport.install()
 from pyprophet.stats import to_one_dim_array, pnorm, pemp, pi0est, qvalue, bw_nrd0, lfdr, stat_metrics
 
 import pandas as pd

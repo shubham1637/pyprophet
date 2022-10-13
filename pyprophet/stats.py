@@ -173,6 +173,7 @@ def pi0est(p_values, lambda_ = np.arange(0.05,1.0,0.05), pi0_method = "smoother"
     # predict=robjects.r('predict')
 
     p = np.array(p_values)
+    p_max = 1.0
 
     rm_na = np.isfinite(p)
     p = p[rm_na]
@@ -180,9 +181,6 @@ def pi0est(p_values, lambda_ = np.arange(0.05,1.0,0.05), pi0_method = "smoother"
     ll = 1
     if isinstance(lambda_, np.ndarray ):
         ll = len(lambda_)
-        lambda_start = max(np.min(lambda_), np.min(p))
-        lambda_end = min(np.max(lambda_), np.max(p))
-        lambda_ = np.linspace(lambda_start, lambda_end, ll)
         lambda_ = np.sort(lambda_)
         print(f"Current lambda: {lambda_}")
 
@@ -193,6 +191,15 @@ def pi0est(p_values, lambda_ = np.arange(0.05,1.0,0.05), pi0_method = "smoother"
     elif (np.min(lambda_) < 0 or np.max(lambda_) >= 1):
         raise click.ClickException("Lambda must be within [0,1)")
 
+    if (max(p) < np.max(lambda_)) and (ll != 1):
+        lambda_start = max(np.min(lambda_), np.min(p))
+        lambda_end = min(np.max(lambda_), np.max(p))
+        lambda_ = np.linspace(lambda_start, lambda_end, ll)
+        lambda_ = np.sort(lambda_)
+        p_max = np.max(p)
+        print(f"Current lambda: {lambda_}")
+        #raise click.ClickException("ERROR: maximum p-value is smaller than lambda range. Change the range of lambda or use qvalue_truncp() for truncated p-values.")
+
     if (ll == 1):
         pi0 = np.mean(p >= lambda_)/(1 - lambda_)
         pi0_lambda = pi0
@@ -201,7 +208,7 @@ def pi0est(p_values, lambda_ = np.arange(0.05,1.0,0.05), pi0_method = "smoother"
     else:
         pi0 = []
         for l in lambda_:
-            pi0.append(np.mean(p >= l)/(1 - l))
+            pi0.append(np.mean(p >= l)/(1 - l/p_max))
         pi0_lambda = pi0
 
         if (pi0_method == "smoother"):
